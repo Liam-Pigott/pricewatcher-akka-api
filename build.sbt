@@ -20,6 +20,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.slick" %% "slick" % "3.3.3",
   "com.typesafe.slick" %% "slick-hikaricp" % "3.3.3",
   "mysql" % "mysql-connector-java" % "6.0.6",
+  "com.h2database" % "h2" % "1.4.200",
   "com.typesafe.akka" %% "akka-stream-testkit" % AkkaVersion,
   "com.typesafe.akka" %% "akka-http-testkit" % AkkaHttpVersion,
   "org.scalactic" %% "scalactic" % "3.2.5",

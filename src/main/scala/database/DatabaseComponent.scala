@@ -1,15 +1,12 @@
 package database
 
-import slick.jdbc.JdbcBackend.{Database, Session}
-import util.Config
+import slick.basic.DatabaseConfig
+import slick.jdbc.JdbcProfile
 
-trait DatabaseComponent extends Config {
+class DatabaseComponent(config: String){
 
-  // Init DB
-  val db = Database.forURL(
-    url = dbUrl,
-    user = dbUser,
-    password = dbPass,
-    driver = dbDriver
-  )
+  val dc = DatabaseConfig.forConfig[JdbcProfile](config)
+  val db = dc.db
+  val profile = dc.profile
+
 }

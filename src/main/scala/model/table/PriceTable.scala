@@ -8,7 +8,7 @@ import com.github.tototoshi.slick.MySQLJodaSupport._
 
 
 class PriceTable(tag: Tag) extends Table[Price](tag, "prices"){
-  def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+  def id = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
   def name = column[String]("name")
   def date = column[DateTime]("date", O.SqlType("DATETIME"))
   def url = column[String]("url")
