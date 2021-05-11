@@ -1,4 +1,4 @@
-package mappers
+package mapper
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import model.Price
@@ -8,5 +8,5 @@ trait PriceJsonProtocol extends DefaultJsonProtocol with SprayJsonSupport{
 
   import CustomDateTimeFormat._
 
-  implicit val priceFormat: RootJsonFormat[Price] = jsonFormat6(Price)
+  implicit val priceFormat: RootJsonFormat[Price] = jsonFormat4(Price)
 }

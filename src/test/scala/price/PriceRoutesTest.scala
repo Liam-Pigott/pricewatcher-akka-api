@@ -1,7 +1,7 @@
 package price
 
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import mappers.PriceJsonProtocol
+import mapper.PriceJsonProtocol
 import model.Price
 import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers
@@ -42,7 +42,8 @@ class PriceRoutesTest extends AnyWordSpec with Matchers with ScalatestRouteTest 
 
       Get("/api/prices/1") ~> routes ~> check {
         responseAs[Price].id shouldBe testPrice1.id
-        responseAs[Price].name shouldBe testPrice1.name
+        responseAs[Price].price shouldBe testPrice1.price
+        responseAs[Price].watcher_id shouldBe testPrice1.watcher_id
         status.intValue() shouldBe 200
       }
     }
@@ -53,6 +54,10 @@ class PriceRoutesTest extends AnyWordSpec with Matchers with ScalatestRouteTest 
       Get("/api/prices/999") ~> routes ~> check {
         status.intValue() shouldBe 404
       }
+    }
+
+    "return prices in date range" in {
+
     }
   }
 }

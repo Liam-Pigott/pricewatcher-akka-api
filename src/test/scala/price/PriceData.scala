@@ -1,10 +1,12 @@
 package price
 
+import mapper.CustomDateTimeFormat
 import model.Price
-import org.joda.time.DateTime
 
 trait PriceData {
-  val testPrice1: Price = Price(Some(1L), "Test1", DateTime.now, "https://testurl.com/1", 100, None)
-  val testPrice2: Price = Price(Some(2L), "Test2", DateTime.now, "https://testurl.com/2", 30, Some("Coffee"))
-  val testPrice3: Price = Price(None, "Test3", DateTime.now, "https://testurl.com/3", 30, Some("Category"))
+  val testPrice1: Price = Price(Some(1L), 1L, 100,  CustomDateTimeFormat.parseDateTimeString("2020-12-25 11:11:11"))
+  val testPrice2: Price = Price(Some(2L), 2L, 30, CustomDateTimeFormat.parseDateTimeString("2021-01-21 11:11:11"))
+  val testPrice3: Price = Price(None, 1L, 30, CustomDateTimeFormat.parseDateTimeString("2021-03-13 11:11:11"))
+
+  val testPrices = Seq(testPrice1, testPrice2, testPrice3)
 }

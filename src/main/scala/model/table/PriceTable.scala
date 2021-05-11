@@ -7,17 +7,13 @@ import slick.jdbc.MySQLProfile.api._
 import com.github.tototoshi.slick.MySQLJodaSupport._
 
 
-class PriceTable(tag: Tag) extends Table[Price](tag, "prices"){
-  def id = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
-  def name = column[String]("name")
-  def date = column[DateTime]("date", O.SqlType("DATETIME"))
-  def url = column[String]("url")
+class PriceTable(tag: Tag) extends Table[Price](tag, "Price"){
+  def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+  def watcherId = column[Long]("watcher_id")
   def price = column[Double]("price")
-  def category = column[Option[String]]("category")
+  def date = column[DateTime]("date_time", O.SqlType("DATETIME"))
 
-  def * : ProvenShape[Price] = (id, name, date, url, price, category) <> (Price.tupled, Price.unapply)
+  def watcher = foreignKey("FK__Price__Watcher", watcherId, TableQuery[WatcherTable])(_.id)
+
+  def * : ProvenShape[Price] = (id.?, watcherId, price, date) <> (Price.tupled, Price.unapply)
 }
-
-
-
-

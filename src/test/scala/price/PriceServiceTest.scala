@@ -1,7 +1,7 @@
 package price
 
 import database.{DatabaseComponent, DatabaseManager}
-import model.Price
+import mapper.CustomDateTimeFormat
 import model.table.PriceTable
 import org.joda.time.DateTime
 import util.Config
@@ -15,7 +15,7 @@ import slick.jdbc.H2Profile.api._
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-class PriceServiceTest extends AnyWordSpec with BeforeAndAfter with Config with PriceData {
+class PriceServiceTest extends AnyWordSpec with BeforeAndAfter with BeforeAndAfterEach with Config with PriceData {
 
   var dc: DatabaseComponent = _
   var db: JdbcBackend#DatabaseDef = _
@@ -25,36 +25,20 @@ class PriceServiceTest extends AnyWordSpec with BeforeAndAfter with Config with 
 
   before {
     dc = new DatabaseComponent(defaultDb) // default db specified in application.conf
-    DatabaseManager.initTables(dc)
+    Await.result(DatabaseManager.initTables(dc), Duration.Inf)
     db = dc.db
     priceService = new PriceService(dc)
   }
 
-  after {
-    db.close()
+  override def afterEach() = {
+    Await.result(db.run(priceTable.delete), Duration.Inf)
   }
 
   "PriceService" should {
 
     "return empty prices when table is empty" in {
       val prices = Await.result(priceService.getPrices, Duration.Inf)
-      prices.isEmpty
-    }
-
-    "return list of prices" in {
-      val prices = Seq(testPrice1, testPrice2, testPrice3)
-      // Add the entry to fetch later from service layer
-      Await.result(db.run(priceTable ++= prices), Duration.Inf)
-
-      // get by test id
-      val priceResult = Await.result(priceService.getPrices, Duration.Inf)
-      assert(priceResult.size.equals(3))
-      assert(priceResult.head.name.equals(testPrice1.name))
-    }
-
-    "return empty price when get by id if id not exists" in {
-      val priceResult = Await.result(priceService.getPriceById(999L), Duration.Inf)
-      assert(priceResult.isEmpty)
+      assert(prices.isEmpty)
     }
 
     "return price by id when id exists" in {
@@ -63,10 +47,41 @@ class PriceServiceTest extends AnyWordSpec with BeforeAndAfter with Config with 
       Await.result(db.run(priceTable += priceToTest), Duration.Inf)
 
       // get by test id
-      val priceResult = Await.result(priceService.getPriceById(priceToTest.id.head), Duration.Inf)
-      assert(priceToTest.id === priceResult.head.id)
+      val res = Await.result(priceService.getPriceById(priceToTest.id.head), Duration.Inf)
+      assert(priceToTest.id === res.head.id)
+    }
+
+    "return list of prices" in {
+      // Add the entry to fetch later from service layer
+      Await.result(db.run(priceTable ++= testPrices), Duration.Inf)
+
+      // get by test id
+      val res = Await.result(priceService.getPrices, Duration.Inf)
+      assert(res.size.equals(3))
+      assert(res.head.watcher_id.equals(testPrice1.watcher_id))
+      assert(res.head.price.equals(testPrice1.price))
+    }
+
+    "return empty price when get by id if id not exists" in {
+      val res = Await.result(priceService.getPriceById(999L), Duration.Inf)
+      assert(res.isEmpty)
+    }
+
+    "return prices for date range" in {
+      // Add the entry to fetch later from service layer
+      Await.result(db.run(priceTable ++= testPrices), Duration.Inf)
+
+      // get by test id
+      val res = Await.result(priceService.getPricesForDateRange(CustomDateTimeFormat.parseDateTimeString("2021-01-01 11:11:11"), DateTime.now()), Duration.Inf)
+      assert(res.size == 2)
     }
   }
 
+  "return prices for watcher id" in {
+    Await.result(db.run(priceTable ++= testPrices), Duration.Inf)
+
+    val res = Await.result(priceService.getPricesForWatcher(1L), Duration.Inf)
+    assert(res.size == 2)
+  }
 
 }
