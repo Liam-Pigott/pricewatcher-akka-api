@@ -19,7 +19,9 @@ Modify `application.conf` to change this setup. By default the application runs 
 - `GET /api/prices`
 - `GET /api/prices/:id`
 
+**Watchers**
+- TODO
+
 ### Future Developments
-- Migrate watchers to database and add the associated CRUD operations
 - Add swagger docs
 - Security
