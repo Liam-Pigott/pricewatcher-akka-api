@@ -3,26 +3,26 @@ package route
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import mapper.PriceJsonProtocol
+import mapper.{PriceJsonProtocol, WatcherJsonProtocol}
 import org.slf4j.LoggerFactory
-import service.PriceService
+import service.{PriceService, WatcherService}
 
-//TODO: add date range GET
-class PriceRoutes(val priceService: PriceService) extends PriceJsonProtocol{
+
+class WatcherRoutes(val watcherService: WatcherService) extends WatcherJsonProtocol{
 
   val log = LoggerFactory.getLogger(this.getClass)
 
   val routes: Route = {
-    pathPrefix("api" / "prices") {
+    pathPrefix("api" / "watchers") {
       get {
         pathEndOrSingleSlash {
-          complete(priceService.getPrices)
+          complete(watcherService.getWatchers)
         } ~
           path(IntNumber) { id =>
-            onSuccess(priceService.getPriceById(id)) {
-              case Some(price) => complete(price)
+            onSuccess(watcherService.getWatcherById(id)) {
+              case Some(watcher) => complete(watcher)
               case None => {
-                log.info(s"Attempt to find price entry with id $id failed")
+                log.info(s"Attempt to find watcher entry with id $id failed")
                 complete(StatusCodes.NotFound)
               }
             }
