@@ -8,19 +8,14 @@ import service.{PriceService, WatcherService}
 import util.Config
 import akka.http.scaladsl.server.Directives._
 
-object AkkaPriceWatcherApi extends Config {
+object AkkaPriceWatcherApi extends Config with DatabaseComponent {
 
   implicit val system = ActorSystem(Behaviors.empty, "AkkaPriceWatcherApi")
 
-  val dbComponent = new DatabaseComponent(defaultDb)
-
   DatabaseManager.initTables(dbComponent)
 
-  val watcherService = new WatcherService(dbComponent)
-  val watcherRoutes = new WatcherRoutes(watcherService)
-
-  val priceService = new PriceService(dbComponent)
-  val priceRoutes = new PriceRoutes(priceService)
+  val watcherRoutes = new WatcherRoutes(new WatcherService)
+  val priceRoutes = new PriceRoutes(new PriceService)
 
   val routes: Route = priceRoutes.routes ~ watcherRoutes.routes
 

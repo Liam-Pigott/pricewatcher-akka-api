@@ -6,7 +6,6 @@ import model.table.WatcherTable
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach}
 import org.scalatest.wordspec.AnyWordSpec
 import service.WatcherService
-import slick.jdbc.JdbcBackend
 import slick.lifted.TableQuery
 import util.Config
 import slick.jdbc.H2Profile.api._
@@ -14,19 +13,13 @@ import slick.jdbc.H2Profile.api._
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-class WatcherServiceTest extends AnyWordSpec with BeforeAndAfter with BeforeAndAfterEach with Config with WatcherData {
+class WatcherServiceTest extends AnyWordSpec with BeforeAndAfter with BeforeAndAfterEach with Config with WatcherData with DatabaseComponent {
 
-  var dc: DatabaseComponent = _
-  var db: JdbcBackend#DatabaseDef = _
-  var watcherService: WatcherService = _
+  val watcherService: WatcherService = new WatcherService
   val watcherTable = TableQuery[WatcherTable]
 
-
   before {
-    dc = new DatabaseComponent(defaultDb) // default db specified in application.conf
-    Await.result(DatabaseManager.initTables(dc), Duration.Inf)
-    db = dc.db
-    watcherService = new WatcherService(dc)
+    Await.result(DatabaseManager.initTables(dbComponent), Duration.Inf)
   }
 
   override def afterEach() = {

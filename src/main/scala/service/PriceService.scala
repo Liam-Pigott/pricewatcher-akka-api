@@ -1,6 +1,6 @@
 package service
 
-import database.DatabaseComponent
+import database.DatabaseComponent._
 import model.Price
 import model.table.PriceTable
 import org.joda.time.DateTime
@@ -11,9 +11,8 @@ import scala.concurrent.Future
 /**
  * The purpose of this service is to expose data already collected rather than generate/update existing entries
  */
-class PriceService(val databaseComponent: DatabaseComponent){
-  import databaseComponent._
-  import databaseComponent.profile.api._
+class PriceService {
+  import dbComponent.profile.api._
 
   val prices = TableQuery[PriceTable]
 
