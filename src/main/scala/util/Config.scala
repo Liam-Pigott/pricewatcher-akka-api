@@ -11,7 +11,5 @@ trait Config {
   val port: Int = httpConfig.getInt("port")
 
   //Database config
-  val defaultDb = config.getString("default-database")
-  val dbConfig = config.getConfig(defaultDb)
-
+  val defaultDb: String = config.getString("default-database")
 }

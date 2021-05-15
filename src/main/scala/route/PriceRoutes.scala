@@ -4,13 +4,11 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import mapper.PriceJsonProtocol
-import org.slf4j.LoggerFactory
 import service.PriceService
+import util.Logging
 
 //TODO: add date range GET
-class PriceRoutes(val priceService: PriceService) extends PriceJsonProtocol{
-
-  val log = LoggerFactory.getLogger(this.getClass)
+class PriceRoutes(val priceService: PriceService) extends PriceJsonProtocol with Logging {
 
   val routes: Route = {
     pathPrefix("api" / "prices") {
@@ -22,7 +20,7 @@ class PriceRoutes(val priceService: PriceService) extends PriceJsonProtocol{
             onSuccess(priceService.getPriceById(id)) {
               case Some(price) => complete(price)
               case None => {
-                log.info(s"Attempt to find price entry with id $id failed")
+                logger.info(s"Attempt to find price entry with id $id failed")
                 complete(StatusCodes.NotFound)
               }
             }

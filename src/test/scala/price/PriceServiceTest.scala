@@ -9,25 +9,18 @@ import org.scalatest._
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpec
 import service.PriceService
-import slick.jdbc.JdbcBackend
 import slick.jdbc.H2Profile.api._
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-class PriceServiceTest extends AnyWordSpec with BeforeAndAfter with BeforeAndAfterEach with Config with PriceData {
+class PriceServiceTest extends AnyWordSpec with BeforeAndAfter with BeforeAndAfterEach with Config with PriceData with DatabaseComponent {
 
-  var dc: DatabaseComponent = _
-  var db: JdbcBackend#DatabaseDef = _
-  var priceService: PriceService = _
+  val priceService: PriceService = new PriceService
   val priceTable = TableQuery[PriceTable]
 
-
   before {
-    dc = new DatabaseComponent(defaultDb) // default db specified in application.conf
-    Await.result(DatabaseManager.initTables(dc), Duration.Inf)
-    db = dc.db
-    priceService = new PriceService(dc)
+    Await.result(DatabaseManager.initTables(dbComponent), Duration.Inf)
   }
 
   override def afterEach() = {

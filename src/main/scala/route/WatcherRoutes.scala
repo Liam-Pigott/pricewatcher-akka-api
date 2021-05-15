@@ -3,14 +3,12 @@ package route
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import mapper.{PriceJsonProtocol, WatcherJsonProtocol}
-import org.slf4j.LoggerFactory
-import service.{PriceService, WatcherService}
+import mapper.WatcherJsonProtocol
+import service.WatcherService
+import util.Logging
 
 
-class WatcherRoutes(val watcherService: WatcherService) extends WatcherJsonProtocol{
-
-  val log = LoggerFactory.getLogger(this.getClass)
+class WatcherRoutes(val watcherService: WatcherService) extends WatcherJsonProtocol with Logging {
 
   val routes: Route = {
     pathPrefix("api" / "watchers") {
@@ -22,7 +20,7 @@ class WatcherRoutes(val watcherService: WatcherService) extends WatcherJsonProto
             onSuccess(watcherService.getWatcherById(id)) {
               case Some(watcher) => complete(watcher)
               case None => {
-                log.info(s"Attempt to find watcher entry with id $id failed")
+                logger.info(s"Attempt to find watcher entry with id $id failed")
                 complete(StatusCodes.NotFound)
               }
             }
