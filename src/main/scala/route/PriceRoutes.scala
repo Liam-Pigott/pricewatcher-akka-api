@@ -6,8 +6,8 @@ import akka.http.scaladsl.server.Route
 import mapper.PriceJsonProtocol
 import service.PriceService
 import util.Logging
+import mapper.CustomDateTimeFormat._
 
-//TODO: add date range GET
 class PriceRoutes(val priceService: PriceService) extends PriceJsonProtocol with Logging {
 
   val routes: Route = {
@@ -23,6 +23,11 @@ class PriceRoutes(val priceService: PriceService) extends PriceJsonProtocol with
                 logger.info(s"Attempt to find price entry with id $id failed")
                 complete(StatusCodes.NotFound)
               }
+            }
+          } ~
+          path("daterange") {
+            parameters("startDate", "endDate") { (startDate, endDate) =>
+              complete(priceService.getPricesForDateRange(parseDateTimeString(startDate), parseDateTimeString(endDate)))
             }
           }
       }

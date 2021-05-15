@@ -1,7 +1,7 @@
 package price
 
 import database.{DatabaseComponent, DatabaseManager}
-import mapper.CustomDateTimeFormat
+import mapper.CustomDateTimeFormat._
 import model.table.PriceTable
 import org.joda.time.DateTime
 import util.Config
@@ -65,7 +65,7 @@ class PriceServiceTest extends AnyWordSpec with BeforeAndAfter with BeforeAndAft
       Await.result(db.run(priceTable ++= testPrices), Duration.Inf)
 
       // get by test id
-      val res = Await.result(priceService.getPricesForDateRange(CustomDateTimeFormat.parseDateTimeString("2021-01-01 11:11:11"), DateTime.now()), Duration.Inf)
+      val res = Await.result(priceService.getPricesForDateRange(parseDateTimeString("2021-01-01 11:11:11"), DateTime.now()), Duration.Inf)
       assert(res.size == 2)
     }
   }

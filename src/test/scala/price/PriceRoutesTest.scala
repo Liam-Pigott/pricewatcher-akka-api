@@ -10,6 +10,7 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import route.PriceRoutes
 import service.PriceService
 import spray.json._
+import mapper.CustomDateTimeFormat._
 
 import scala.concurrent.Future
 
@@ -57,7 +58,13 @@ class PriceRoutesTest extends AnyWordSpec with Matchers with ScalatestRouteTest 
     }
 
     "return prices in date range" in {
+      when(mockPriceService.getPricesForDateRange(parseDateTimeString("2021-01-01"), parseDateTimeString("2021-05-01")))
+        .thenReturn(Future.successful(Seq(testPrice2, testPrice3)))
 
+      Get("/api/prices/daterange?startDate=2021-01-01&endDate=2021-05-01") ~> routes ~> check {
+        responseAs[String] shouldBe Seq(testPrice2, testPrice3).toJson.toString
+        status.intValue() shouldBe 200
+      }
     }
   }
 }
