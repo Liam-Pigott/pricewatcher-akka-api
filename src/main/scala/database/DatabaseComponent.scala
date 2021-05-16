@@ -12,5 +12,3 @@ trait DatabaseComponent extends Config {
 
   val dbComponent: DatabaseComponent = this
 }
-
-object DatabaseComponent extends DatabaseComponent

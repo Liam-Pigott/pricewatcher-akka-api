@@ -10,6 +10,7 @@ import scala.util.Try
 
 trait CustomDateTimeFormat {
 
+  // allow multiple date formats over api
   private val parser1: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
   private val parser2: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd")
 
@@ -35,6 +36,7 @@ trait CustomDateTimeFormat {
       parser1Try.getOrElse(parser2Try.get)
     }
 
+  // needed for slick to be able to query based on date time
   implicit def customTimeMapping: BaseColumnType[DateTime] = MappedColumnType.base[DateTime, Timestamp](
     dateTime => new Timestamp(dateTime.getMillis),
     timeStamp => new DateTime(timeStamp.getTime)

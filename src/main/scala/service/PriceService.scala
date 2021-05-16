@@ -1,6 +1,6 @@
 package service
 
-import database.DatabaseComponent._
+import database.DatabaseComponent
 import mapper.CustomDateTimeFormat
 import model.Price
 import model.table.PriceTable
@@ -11,7 +11,7 @@ import scala.concurrent.Future
 /**
  * The purpose of this service is to expose data already collected rather than generate/update existing entries
  */
-class PriceService extends CustomDateTimeFormat{
+class PriceService extends CustomDateTimeFormat with DatabaseComponent{
   import dbComponent.profile.api._
 
   val prices = TableQuery[PriceTable]

@@ -1,13 +1,13 @@
 package service
 
-import database.DatabaseComponent._
+import database.DatabaseComponent
 import model.Watcher
 import model.table.WatcherTable
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class WatcherService {
+class WatcherService extends DatabaseComponent{
   import dbComponent.profile.api._
 
   val watchers = TableQuery[WatcherTable]

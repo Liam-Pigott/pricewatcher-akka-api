@@ -18,9 +18,14 @@ Modify `application.conf` to change this setup. By default the application runs 
 **Prices**
 - `GET /api/prices`
 - `GET /api/prices/:id`
+- `GET /api/prices/dates?startDate=...&endDate=...`
 
 **Watchers**
-- TODO
+- `GET /api/watchers`
+- `GET /api/watchers/:id`
+- `POST /api/watchers`
+- `PUT /api/watchers/:id`
+- `DELETE /api/watchers/:id`
 
 ### Future Developments
 - Add swagger docs
