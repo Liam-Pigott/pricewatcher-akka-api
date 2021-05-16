@@ -16,10 +16,11 @@ class WatcherService {
 
   def getWatcherById(id: Long): Future[Option[Watcher]] = db.run(watchers.filter(_.id === id).result.headOption)
 
-  def createWatcher(watcher: Watcher): Future[Watcher] = db.run(
-    watchers returning watchers.map(_.id) into ((watcher, id) => watcher.copy(id=Some(id)))
-      += watcher
-  )
+  def createWatcher(watcher: Watcher): Future[Watcher] = getWatcherByUrlXpath(watcher.url, watcher.xpath).flatMap {
+    case true => throw new IllegalArgumentException(s"Watcher with url=${watcher.url} and xpath=${watcher.xpath} already exists!")
+    case _ =>
+      db.run(watchers returning watchers.map(_.id) into ((watcher, id) => watcher.copy(id = Some(id))) += watcher)
+  }
 
   def updateWatcher(id: Long, toUpdate: Watcher): Future[Option[Watcher]] = getWatcherById(id).flatMap {
     case Some(_) =>
@@ -29,4 +30,6 @@ class WatcherService {
   }
 
   def deleteWatcher(id: Long): Future[Int] = db.run(watchers.filter(_.id === id).delete)
+
+  def getWatcherByUrlXpath(url: String, xpath: String): Future[Boolean] = db.run(watchers.filter(w => w.url === url && w.xpath === xpath).exists.result)
 }

@@ -1,7 +1,7 @@
 package price
 
 import database.{DatabaseComponent, DatabaseManager}
-import mapper.CustomDateTimeFormat._
+import mapper.CustomDateTimeFormat
 import model.table.PriceTable
 import org.joda.time.DateTime
 import util.Config
@@ -14,7 +14,7 @@ import slick.jdbc.H2Profile.api._
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-class PriceServiceTest extends AnyWordSpec with BeforeAndAfter with BeforeAndAfterEach with Config with PriceData with DatabaseComponent {
+class PriceServiceTest extends AnyWordSpec with BeforeAndAfter with BeforeAndAfterEach with Config with PriceData with DatabaseComponent with CustomDateTimeFormat{
 
   val priceService: PriceService = new PriceService
   val priceTable = TableQuery[PriceTable]
@@ -68,13 +68,12 @@ class PriceServiceTest extends AnyWordSpec with BeforeAndAfter with BeforeAndAft
       val res = Await.result(priceService.getPricesForDateRange(parseDateTimeString("2021-01-01 11:11:11"), DateTime.now()), Duration.Inf)
       assert(res.size == 2)
     }
+
+    "return prices for watcher id" in {
+      Await.result(db.run(priceTable ++= testPrices), Duration.Inf)
+
+      val res = Await.result(priceService.getPricesForWatcher(1L), Duration.Inf)
+      assert(res.size == 2)
+    }
   }
-
-  "return prices for watcher id" in {
-    Await.result(db.run(priceTable ++= testPrices), Duration.Inf)
-
-    val res = Await.result(priceService.getPricesForWatcher(1L), Duration.Inf)
-    assert(res.size == 2)
-  }
-
 }

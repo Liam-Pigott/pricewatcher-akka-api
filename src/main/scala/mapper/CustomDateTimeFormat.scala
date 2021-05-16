@@ -8,7 +8,7 @@ import slick.jdbc.MySQLProfile.api._
 import java.sql.Timestamp
 import scala.util.Try
 
-object CustomDateTimeFormat {
+trait CustomDateTimeFormat {
 
   private val parser1: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
   private val parser2: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd")
