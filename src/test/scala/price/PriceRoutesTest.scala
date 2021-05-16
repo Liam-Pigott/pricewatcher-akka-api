@@ -1,7 +1,7 @@
 package price
 
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import mapper.PriceJsonProtocol
+import mapper.{CustomDateTimeFormat, PriceJsonProtocol}
 import model.Price
 import org.mockito.Mockito.when
 import org.scalatest.matchers.should.Matchers
@@ -13,7 +13,7 @@ import spray.json._
 
 import scala.concurrent.Future
 
-class PriceRoutesTest extends AnyWordSpec with Matchers with ScalatestRouteTest with PriceData with PriceJsonProtocol {
+class PriceRoutesTest extends AnyWordSpec with Matchers with ScalatestRouteTest with PriceData with PriceJsonProtocol with CustomDateTimeFormat{
 
   val mockPriceService = mock[PriceService]
   val routes = new PriceRoutes(mockPriceService).routes
@@ -57,7 +57,13 @@ class PriceRoutesTest extends AnyWordSpec with Matchers with ScalatestRouteTest 
     }
 
     "return prices in date range" in {
+      when(mockPriceService.getPricesForDateRange(parseDateTimeString("2021-01-01"), parseDateTimeString("2021-05-01")))
+        .thenReturn(Future.successful(Seq(testPrice2, testPrice3)))
 
+      Get("/api/prices/dates?startDate=2021-01-01&endDate=2021-05-01") ~> routes ~> check {
+        responseAs[String] shouldBe Seq(testPrice2, testPrice3).toJson.toString
+        status.intValue() shouldBe 200
+      }
     }
   }
 }

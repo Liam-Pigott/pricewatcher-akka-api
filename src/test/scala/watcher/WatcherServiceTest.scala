@@ -40,7 +40,17 @@ class WatcherServiceTest extends AnyWordSpec with BeforeAndAfter with BeforeAndA
       assert(res.id.head === 1)
       assert(res.name === watcherWithoutId.name)
       assert(res.url === watcherWithoutId.url)
-      assert(res.xpath=== watcherWithoutId.xpath)
+      assert(res.xpath === watcherWithoutId.xpath)
+    }
+
+    "throw duplicate error when object exists" in {
+      val origWatcher = testWatcher1
+      Await.result(watcherService.createWatcher(origWatcher), Duration.Inf)
+      val duplicateWatcher = origWatcher.copy(id=Some(2L), name="some other name") // duplicates are based on url/xpath combo
+
+      assertThrows[IllegalArgumentException]{
+        Await.result(watcherService.createWatcher(duplicateWatcher), Duration.Inf)
+      }
     }
 
     "return watcher by id when id exists" in {
@@ -78,16 +88,16 @@ class WatcherServiceTest extends AnyWordSpec with BeforeAndAfter with BeforeAndA
       assert(res.url === origWatcher.url)
       assert(res.xpath === origWatcher.xpath)
     }
-  }
 
-  "should delete watcher" in {
-    val toTest = testWatcher2
-    val toDeleteId = addWatcherReturnId(toTest)
-    val res = Await.result(watcherService.deleteWatcher(toDeleteId), Duration.Inf)
-    assert(res === 1)
+    "should delete watcher" in {
+      val toTest = testWatcher2
+      val toDeleteId = addWatcherReturnId(toTest)
+      val res = Await.result(watcherService.deleteWatcher(toDeleteId), Duration.Inf)
+      assert(res === 1)
 
-    val res2 = Await.result(watcherService.deleteWatcher(999L), Duration.Inf)
-    assert(res2 === 0)
+      val res2 = Await.result(watcherService.deleteWatcher(999L), Duration.Inf)
+      assert(res2 === 0)
+    }
   }
 
 
